@@ -1,23 +1,6 @@
 #![no_std]
 use soroban_sdk::{contract, contractimpl, contracttype, contracterror, Address, Env, Map};
 
-#[contracterror]
-#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-#[repr(u32)]
-pub enum Error {
-    /// Contract has already been initialized
-    AlreadyInitialized = 1,
-    /// Contract has not been initialized yet
-    NotInitialized = 2,
-}
-    /// Caller is not authorized to perform this action
-    Unauthorized = 1,
-    /// The escrow deadline has passed
-    Expired = 2,
-}
-﻿#![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, contracterror, Address, Env, Map};
-
 /// Minimum rent amount in stroops/token-units to prevent micro-escrow spam
 pub const MIN_RENT: i128 = 100;
 

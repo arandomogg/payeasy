@@ -86,3 +86,49 @@ fn test_get_balance() {
     client.contribute(&roommate_a, &150_i128);
     assert_eq!(client.get_balance(&roommate_a), 350_i128);
 }
+
+#[test]
+fn test_full_flow_scenario() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let contract_id = env.register(RentEscrowContract, ());
+    let client = RentEscrowContractClient::new(&env, &contract_id);
+
+    let landlord = Address::generate(&env);
+    let roommate_a = Address::generate(&env);
+    let roommate_b = Address::generate(&env);
+    let roommate_c = Address::generate(&env);
+
+    // Step 1: Initialize with 3 roommate shares
+    let mut roommate_shares = Map::new(&env);
+    roommate_shares.set(roommate_a.clone(), 400_i128);
+    roommate_shares.set(roommate_b.clone(), 300_i128);
+    roommate_shares.set(roommate_c.clone(), 300_i128);
+
+    client.initialize(&landlord, &1000_i128, &roommate_shares);
+
+    // Verify initialization
+    assert_eq!(client.get_landlord(), landlord);
+    assert_eq!(client.get_amount(), 1000_i128);
+    assert_eq!(client.is_fully_funded(), false);
+
+    // Step 2: All three contribute their shares
+    client.contribute(&roommate_a, &400_i128);
+    assert_eq!(client.get_balance(&roommate_a), 400_i128);
+    assert_eq!(client.get_total_funded(), 400_i128);
+
+    client.contribute(&roommate_b, &300_i128);
+    assert_eq!(client.get_balance(&roommate_b), 300_i128);
+    assert_eq!(client.get_total_funded(), 700_i128);
+
+    client.contribute(&roommate_c, &300_i128);
+    assert_eq!(client.get_balance(&roommate_c), 300_i128);
+    assert_eq!(client.get_total_funded(), 1000_i128);
+
+    // Step 3: Verify fully funded
+    assert_eq!(client.is_fully_funded(), true);
+
+    // Step 4: Release to landlord
+    client.release();
+}

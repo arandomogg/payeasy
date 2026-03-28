@@ -259,6 +259,15 @@ impl RentEscrowContract {
             .expect("escrow not initialized")
     }
 
+    /// Return the total rent amount set at initialization.
+    pub fn get_total(env: Env) -> i128 {
+        let escrow: RentEscrow = env.storage()
+            .persistent()
+            .get(&DataKey::Escrow)
+            .expect("escrow not initialized");
+        escrow.rent_amount
+    }
+
     /// Allow roommates to reclaim deposits after deadline.
     pub fn claim_refund(env: Env, from: Address) -> Result<(), Error> {
         from.require_auth();

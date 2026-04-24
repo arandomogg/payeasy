@@ -623,7 +623,8 @@ export default function CreateEscrowForm({
           <button
             type="button"
             onClick={handleNext}
-            className="btn-primary !px-5 !py-2.5 !text-sm"
+            disabled={step === 3 && hasInvalidAddress}
+            className="btn-primary !px-5 !py-2.5 !text-sm disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Continue
           </button>
